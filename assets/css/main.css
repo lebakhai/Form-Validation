@@ -12,6 +12,7 @@
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 0 12px rgb(255, 255, 255, 0.01);
+    min-width: 500px;
 }
 
 .heading {
@@ -22,6 +23,16 @@
 
 .form-group {
     padding: 6px 12px;
+    margin-top: 24px;
+}
+
+.form-group.invalid .form-input {
+    border: solid var(--error-color) 3px;
+    outline: none;
+}
+
+.form-group.form-group.invalid .form-msg {
+    display: unset;
 }
 
 .form-group:last-child {
@@ -33,6 +44,7 @@
     float: left;
     margin-bottom: 8px;
     margin-left: 5px;
+    color: var(--input-color);
 }
 
 .form-input {
@@ -44,6 +56,21 @@
     border-radius: 12px;
 }
 
+.form-input:focus {
+    outline: 3px solid var(--text-color);
+    transition: none;
+}
+
+.form-msg {
+    float: left;
+    margin-left: 5px;
+    font-size: 10px;
+    margin: 6px;
+    color: var(--error-color);
+    font-weight: 100;
+    display: none;
+}
+
 .form-submit {
     width: 100%;
     padding: 12px;
@@ -51,6 +78,9 @@
     color: var(--text-color);
     border-radius: 12px;
     border: none;
+    cursor: pointer;
+    user-select: none;
+    transition: 0.25s;
 }
 
 .form-submit:hover {

@@ -38,5 +38,14 @@
         </form>
     </div>
     <script src="assets/js/app.js"></script>
+    <script>
+        Validator({
+            form: '#formReg',
+            rules: [
+                Validator.isRequired('#form-name'),
+                Validator.isEmail('#form-email'),
+            ]
+        });
+    </script>
 </body>
 </html>

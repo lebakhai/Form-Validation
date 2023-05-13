@@ -2,7 +2,6 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-    transition: 0.25s;
     color: #E8F6EF;
     font-family: sans-serif;
 }
@@ -16,9 +15,15 @@
     --text-color: #eeeeee;
     --placeholder-color: #6c6c6c;
     --dsc-color: #777;
-    /* --hover-color: ; */
+    --input-color: #b6b3ae;
 }
 
 ::placeholder {
-    colro: var(--placeholder-color);
+    color: var(--placeholder-color);
+}
+
+@media (max-width: 600px) {
+    #formReg {
+        min-width: unset !important;
+    }
 }
