@@ -42,14 +42,16 @@
         Validator({
             form: '#formReg',
             rules: [
-                Validator.isRequired('#form-name', 3, 'Type please'), // (element, min)
+                Validator.isRequired('#form-name', 3,), // (element, min)
                 Validator.isEmail('#form-email', 10), // (element, min)
-                Validator.isRequired('#form-email', 8, 'Please enter email'), // (element, min)
+                Validator.isRequired('#form-pwd', 8, 'Please enter password'), // (element, min)
+                Validator.isRequired('#form-email', 1,'Please enter email'), // (element, min)
                 Validator.isConfirm('#form-rePwd', () =>  {
                     return document.querySelector('#formReg #form-pwd').value;
-                }, 'Password does not match') 
+                }, 'Password does not match') ,
+                Validator.isRequired('#form-rePwd', 8, 'Please enter re-password'), // (element, min)
             ],
-            onsubmit: (data) => {
+            onSubmit: (data) => {
                 console.log(data)
             }
             

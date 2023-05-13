@@ -7,8 +7,9 @@ function Validator(options) {
 
     formElemet.onsubmit = (e) => {
         e.preventDefault()
-
+        
         var isFormValid = true;
+        var isValid = [];
         
         options.rules.forEach((rule) => {
             var inputElement = formElemet.querySelector(rule.selector);
@@ -23,16 +24,32 @@ function Validator(options) {
                         inputElement.parentElement.classList.remove('invalid');
                         inputMsg.textContent = ``;
                     }
+                    isValid += Boolean(errorMsg);
+                    
                 }
                 validate(inputElement);
 
-                var isValid = validate(inputElement);
-                if (!isValid) {
-                    isFormValid=false
-                }
                 
             }
         })
+        if (isValid.includes(true)) {
+            isFormValid = false;
+            console.log('co loi')
+        } else {
+            isFormValid = true;
+            console.log('deo co loi')
+        };
+
+        
+        if (isFormValid) {
+            if(typeof options.onSubmit === 'function') {
+                var enableInputs = formElemet.querySelectorAll('[name]:not([disable])')
+                var formValues = Array.from(enableInputs).reduce((values, input) => {
+                    return (values[input.name] = input.value) && values
+                }, {})                
+                options.onSubmit(formValues)
+            }
+        }
         
     }
 
