@@ -11,15 +11,15 @@ function Validator(options) {
             if (inputElement) {
                 function validate(element, isTyping) {
                     var errorMsg = rule.test(element, isTyping);
-                    if(errorMsg) {
+                    if (errorMsg) {
                         inputElement.parentElement.classList.add('invalid');
-                        inputMsg.textContent = `Fill me please`;
+                        inputMsg.textContent = errorMsg;
                     } else {
                         inputElement.parentElement.classList.remove('invalid');
                         inputMsg.textContent = ``;
                     }
                 }
-                
+
                 inputElement.onblur = (e) => {
                     validate(inputElement);
                 }
@@ -30,7 +30,7 @@ function Validator(options) {
             }
         })
     };
-} 
+}
 
 Validator.isRequired = (selector) => {
     return {
@@ -44,8 +44,9 @@ Validator.isRequired = (selector) => {
 Validator.isEmail = (selector) => {
     return {
         selector: selector,
-        test: () => {
-            
+        test: (element, isTyping) => {
+            var regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+            return (!regex.test(element.value) && !isTyping) ? `Email only` : undefined;
         }
     };
 }
