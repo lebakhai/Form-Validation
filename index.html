@@ -42,8 +42,9 @@
         Validator({
             form: '#formReg',
             rules: [
-                Validator.isRequired('#form-name'),
-                Validator.isEmail('#form-email'),
+                Validator.isRequired('#form-name', 3), // (element, min)
+                Validator.isEmail('#form-email', 10), // (element, min)
+                Validator.isConfirm('#form-rePwd'),
             ]
         });
     </script>

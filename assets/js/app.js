@@ -32,21 +32,30 @@ function Validator(options) {
     };
 }
 
-Validator.isRequired = (selector) => {
+Validator.isRequired = (selector, min = 1) => {
     return {
         selector: selector,
         test: (element, isTyping) => {
-            return (element.value.trim().length <= 0 && !isTyping) ? `Fill me please` : undefined;
+            return (element.value.trim().length < min && !isTyping) ? `Fill me please` : undefined;
         }
     };
 }
 
-Validator.isEmail = (selector) => {
+Validator.isEmail = (selector, min = 1) => {
     return {
         selector: selector,
         test: (element, isTyping) => {
             var regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-            return (!regex.test(element.value) && !isTyping) ? `Email only` : undefined;
+            return (regex.test(element.value) && !(element.value.trim().length < min)) ? undefined : (!isTyping ? `Email only` : undefined);
         }
     };
+}
+
+Validator.isConfirm = (selector) {
+    return {
+        selector: selector,
+        test: () => {
+
+        };
+    }
 }
