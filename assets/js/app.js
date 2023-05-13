@@ -7,24 +7,25 @@ function Validator(options) {
     if (formElemet) {
         options.rules.forEach((rule) => {
             var inputElement = formElemet.querySelector(rule.selector);
-            var inputMsg = inputElement.parentNode.querySelector('.form-msg');
+            var inputMsg = inputElement.parentElement.querySelector('.form-msg');
             if (inputElement) {
-                function errorHandler(element, isTyping) {
+                function validate(element, isTyping) {
                     var errorMsg = rule.test(element, isTyping);
                     if(errorMsg) {
-                        inputElement.parentNode.classList.add('invalid');
+                        inputElement.parentElement.classList.add('invalid');
                         inputMsg.textContent = `Fill me please`;
                     } else {
-                        inputElement.parentNode.classList.remove('invalid');
+                        inputElement.parentElement.classList.remove('invalid');
+                        inputMsg.textContent = ``;
                     }
                 }
                 
                 inputElement.onblur = (e) => {
-                    errorHandler(inputElement);
+                    validate(inputElement);
                 }
 
                 inputElement.oninput = (e) => {
-                    errorHandler(inputElement, true);
+                    validate(inputElement, true);
                 }
             }
         })
