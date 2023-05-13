@@ -6,27 +6,30 @@ function Validator(options) {
     var formElemet = $(options.form);
     if (formElemet) {
         options.rules.forEach((rule) => {
-            var inputElement = formElemet.querySelector(rule.selector);
-            var inputMsg = inputElement.parentElement.querySelector('.form-msg');
-            if (inputElement) {
-                function validate(element, isTyping) {
-                    var errorMsg = rule.test(element, isTyping);
-                    if (errorMsg) {
-                        inputElement.parentElement.classList.add('invalid');
-                        inputMsg.textContent = errorMsg;
-                    } else {
-                        inputElement.parentElement.classList.remove('invalid');
-                        inputMsg.textContent = ``;
+            var inputElementsSelector = rule.selector;
+            if (inputElementsSelector) {
+                inputElementsSelector.forEach((inputElementName) => {
+                    var inputElement = formElemet.querySelector(inputElementName);
+                    var inputMsg = inputElement.parentElement.querySelector('.form-msg');
+                    function validate(element, isTyping) {
+                        var errorMsg = rule.test(element, isTyping);
+                        if (errorMsg) {
+                            inputElement.parentElement.classList.add('invalid');
+                            inputMsg.textContent = errorMsg;
+                        } else {
+                            inputElement.parentElement.classList.remove('invalid');
+                            inputMsg.textContent = ``;
+                        }
                     }
-                }
+                    inputElement.onblur = (e) => {
+                        validate(inputElement);
+                    }
+    
+                    inputElement.oninput = (e) => {
+                        validate(inputElement, true);
+                    }
+                })
 
-                inputElement.onblur = (e) => {
-                    validate(inputElement);
-                }
-
-                inputElement.oninput = (e) => {
-                    validate(inputElement, true);
-                }
             }
         })
     };
@@ -36,7 +39,7 @@ Validator.isRequired = (selector, min = 1) => {
     return {
         selector: selector,
         test: (element, isTyping) => {
-            return (element.value.trim().length < min && !isTyping) ? `Fill me please` : undefined;
+            return (element.value.trim().length < min && !isTyping) ? `Please enter at least ${min} charaters` : undefined;
         }
     };
 }
@@ -51,11 +54,11 @@ Validator.isEmail = (selector, min = 1) => {
     };
 }
 
-Validator.isConfirm = (selector) {
+Validator.isConfirm = (selector, getConfirmValue) => {
     return {
         selector: selector,
-        test: () => {
-
-        };
-    }
+        test: (element, isTyping) => {
+            return (element.value === getConfirmValue()) ? undefined : (!isTyping ? `Password does not match` : undefined);
+        }
+    };
 }

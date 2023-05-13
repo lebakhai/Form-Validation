@@ -42,9 +42,11 @@
         Validator({
             form: '#formReg',
             rules: [
-                Validator.isRequired('#form-name', 3), // (element, min)
-                Validator.isEmail('#form-email', 10), // (element, min)
-                Validator.isConfirm('#form-rePwd'),
+                Validator.isRequired(['#form-name', '#form-pwd'], 3), // (element, min)
+                Validator.isEmail(['#form-email'], 10), // (element, min)
+                Validator.isConfirm(['#form-rePwd'], () =>  {
+                    return document.querySelector('#formReg #form-pwd').value;
+                }) 
             ]
         });
     </script>
