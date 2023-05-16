@@ -1,110 +1,132 @@
+console.clear();
+
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
 
-function Validator(options) {
-    var formElemet = $(options.form);
-
-    formElemet.onsubmit = (e) => {
-        e.preventDefault()
-        
-        var isFormValid = true;
-        var isValid = [];
-        
-        options.rules.forEach((rule) => {
-            var inputElement = formElemet.querySelector(rule.selector);
-            var inputMsg = inputElement.parentElement.querySelector('.form-msg');
-            if (inputElement) {
-                function validate(element, isTyping) {
-                    var errorMsg = rule.test(element, isTyping);
-                    if (errorMsg) {
-                        inputElement.parentElement.classList.add('invalid');
-                        inputMsg.textContent = errorMsg;
-                    } else {
-                        inputElement.parentElement.classList.remove('invalid');
-                        inputMsg.textContent = ``;
-                    }
-                    isValid += Boolean(errorMsg);
-                    
-                }
-                validate(inputElement);
-
-                
+function Validator(formSelector) {
+    
+    function getParent(element, selector) {
+        while (element.parentElement) {
+            if (element.parentElement.matches(selector)) {
+                return element.parentElement;
             }
-        })
-        if (isValid.includes(true)) {
-            isFormValid = false;
-            console.log('co loi')
-        } else {
-            isFormValid = true;
-            console.log('deo co loi')
-        };
-
-        
-        if (isFormValid) {
-            if(typeof options.onSubmit === 'function') {
-                var enableInputs = formElemet.querySelectorAll('[name]:not([disable])')
-                var formValues = Array.from(enableInputs).reduce((values, input) => {
-                    return (values[input.name] = input.value) && values
-                }, {})                
-                options.onSubmit(formValues)
-            }
+            element = element.parentElement;
         }
-        
     }
 
-    if (formElemet) {
-        options.rules.forEach((rule) => {
-            var inputElement = formElemet.querySelector(rule.selector);
-            var inputMsg = inputElement.parentElement.querySelector('.form-msg');
-            if (inputElement) {
-                function validate(element, isTyping) {
-                    var errorMsg = rule.test(element, isTyping);
-                    if (errorMsg) {
-                        inputElement.parentElement.classList.add('invalid');
-                        inputMsg.textContent = errorMsg;
-                    } else {
-                        inputElement.parentElement.classList.remove('invalid');
-                        inputMsg.textContent = ``;
-                    }
-                }
+    var formRules = {};
+    var validatorRules = {
+        required: (value) => {
+            return value.value ? undefined : `Please enter this`
+        },
+        email: (value) => {
+            const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return regex.test(value.value) ? undefined : `Please enter valid email`
+        },
+        min: (min) => {
+            return function (value) {
+                return value.value.length >= min ? undefined : `Please type least at ${min} characters`
+            }
+        },
+        password: (minMax) => {
+            minMax = minMax.split(',')
+            var min = minMax[0];
+            var max = minMax[1];
 
-                inputElement.onblur = (e) => {
-                    validate(inputElement);
-                }
-
-                inputElement.oninput = (e) => {
-                    validate(inputElement, true);
+            const regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/;
+            return function(value) {
+                if (!value.value || value.value.length <= 0) {
+                    return `Please enter password`
+                } else if (value.value.length < min) {
+                    return `Password must be at least ${min} characters`
+                } else if (value.value.length > max) {
+                    return `Password must be at most ${max} characters`
+                } else if(!/[a-zA-Z]/.test(value.value)) {
+                    return `Password must be ar least 1 letter`
+                } else if (!(/[0-9]/.test(value.value))) {
+                    return `Password must be ar least 1 number`
+                } else if(regex.test(value.value)) {
+                    return undefined;
+                } else  {
+                    return `Please check your password again or contact support`
                 }
             }
+        },
+        confirm: (compareValue) => {
+            var compareValue = $(compareValue);
+            return function (value) {
+                return compareValue.value === value.value ? undefined : `Not Same`
+            }
+        }
+    }
+    var formElement = $(formSelector);
+    var inputs = formElement.querySelectorAll('[name][rules]');
+    
+    if (formElement) {
+        inputs.forEach((input, index) => {
+            var rules = input.getAttribute('rules').split('|');
+            rules.forEach((rule, index) => {
+                var ruleInfo;
+                var ruleIsHasValue = rule.includes(':');
+
+                if(ruleIsHasValue) {
+                    ruleInfo = rule.split(':');
+                    rule = ruleInfo[0]
+                };
+                
+                var ruleFunc = validatorRules[rule];
+
+                if (ruleIsHasValue) {
+                    ruleFunc = ruleFunc(ruleInfo[1]);  
+                }
+
+                if (Array.isArray(formRules[input.name])) {
+                    formRules[input.name].push(ruleFunc)
+                } else {
+                    formRules[input.name] = [ruleFunc];
+                }
+
+            })
+            input.onblur = handleValidate;
+            input.oninput = handleClear;
+
+            function handleValidate(e) {
+                var rules = formRules[e.target.name];
+                var errorMsg;
+
+                rules.find((rule) => {
+                    errorMsg = rule(e.target);
+                    return errorMsg
+                });
+
+                var formGroup = getParent(e.target, ".form-group");
+                if(errorMsg) {
+                    formGroup.classList.add('invalid')
+                    
+                    if(!formGroup) return;
+                    var formMsg = formGroup.querySelector('.form-msg');
+                    if (formMsg) {
+                        formMsg.textContent = errorMsg;
+                    }
+                } else {
+                    formGroup.classList.remove('invalid')
+                }
+            }
+
+            function handleClear(e) {
+                var formGroup = getParent(e.target, ".form-group");
+                if (formGroup.classList.contains('invalid')) {
+                    formGroup.classList.remove('invalid');
+                    var formMsg = formGroup.querySelector('.form-msg');
+
+                    if (formMsg) {
+                        formMsg.textContent = ''
+                    }
+                }
+            }
+            
         })
-    };
+    }
 }
 
-Validator.isRequired = (selector, min = 1, message = `Please enter at least ${min} characters`) => {
-    return {
-        selector: selector,
-        test: (element, isTyping) => {
-            return (element.value.trim().length < min && !isTyping) ? message : undefined;
-        }
-    };
-}
-
-Validator.isEmail = (selector, min = 1,  message = `Email only`) => {
-    return {
-        selector: selector,
-        test: (element, isTyping) => {
-            var regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-            return (regex.test(element.value) && !(element.value.trim().length < min)) ? undefined : (!isTyping ? message : undefined);
-        }
-    };
-}
-
-Validator.isConfirm = (selector, getConfirmValue, message = `Text does not match`) => {
-    return {
-        selector: selector,
-        test: (element, isTyping) => {
-            return (element.value === getConfirmValue()) ? undefined : (!isTyping ? message : undefined);
-        }
-    };
-}

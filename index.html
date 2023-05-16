@@ -14,22 +14,22 @@
             <div class="heading">Sign Up</div>
             <div class="form-group">
                 <div class="form-label">Full name:</div>
-                <input type="text" name="form-name" placeholder="Nguyen Van A" id="form-name" class="form-input">
+                <input type="text" name="name" rules="required" placeholder="Nguyen Van A" id="form-name" class="form-input">
                 <div class="form-msg"></div>
             </div>
             <div class="form-group">
                 <div class="form-label">Email:</div>
-                <input type="email" name="form-email" placeholder="email@domain.com" id="form-email" class="form-input">
+                <input type="email" name="email" rules="required|email" placeholder="email@domain.com" id="form-email" class="form-input">
                 <div class="form-msg"></div>
             </div>
             <div class="form-group">
                 <div class="form-label">Password:</div>
-                <input type="password" name="form-pwd" placeholder="********" id="form-pwd" class="form-input">
+                <input type="password" name="password" rules="required|password:6,24" placeholder="********" id="form-pwd" class="form-input">
                 <div class="form-msg"></div>
             </div>
             <div class="form-group">
                 <div class="form-label">Re-Password:</div>
-                <input type="password" name="form-rePwd" placeholder="********" id="form-rePwd" class="form-input">
+                <input type="password" name="rePassword" rules="required|confirm:#form-pwd" placeholder="********" id="form-rePwd" class="form-input">
                 <div class="form-msg"></div>
             </div>
             <div class="form-group">
@@ -39,6 +39,8 @@
     </div>
     <script src="assets/js/app.js"></script>
     <script>
+
+        Validator('#formReg')
 
     </script>
 </body>
