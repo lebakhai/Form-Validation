@@ -42,8 +42,8 @@
 
         var regForm = new Validator('#formReg');
 
-        regForm.onSubmit = () => {
-            console.log('Call API')
+        regForm.onSubmit = (data) => {
+            console.log(data);
         }
 
     </script>

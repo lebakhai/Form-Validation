@@ -2,10 +2,9 @@ console.clear();
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
+var outputData = {};
 
-
-function Validator(formSelector) {
-    
+function Validator(formSelector) {  
     function getParent(element, selector) {
         while (element.parentElement) {
             if (element.parentElement.matches(selector)) {
@@ -19,8 +18,14 @@ function Validator(formSelector) {
         var rules = formRules[e.target.name];
         var errorMsg;
 
-        rules.find((rule) => {
+        for (rule of rules) {
             errorMsg = rule(e.target);
+            if (errorMsg) {
+                break;
+            }
+        }
+
+        rules.find((rule) => {
             return errorMsg
         });
 
@@ -80,7 +85,7 @@ function Validator(formSelector) {
         confirm: (compareValue) => {
             var compareValue = $(compareValue);
             return function (value) {
-                return compareValue.value === value.value ? undefined : `Not Same`
+                return compareValue.value === value.value ? undefined : `Not matches`
             }
         }
     }
@@ -130,6 +135,13 @@ function Validator(formSelector) {
         })
     }
 
+    function getOutputData() {
+        inputs.forEach((input, index) => {
+            outputData[input.name] = input.value;
+        })
+        return outputData;
+    }
+
     formElement.onsubmit = (e) => {
         e.preventDefault();
         var inputs = formElement.querySelectorAll('[name][rules]');
@@ -143,7 +155,7 @@ function Validator(formSelector) {
 
         if (isValid) {
             if (this.onSubmit) {
-                this.onSubmit();
+                this.onSubmit(getOutputData());
             } else {
                 formElement.submit();
             }
