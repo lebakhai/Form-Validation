@@ -40,7 +40,11 @@
     <script src="assets/js/app.js"></script>
     <script>
 
-        Validator('#formReg')
+        var regForm = new Validator('#formReg');
+
+        regForm.onSubmit = () => {
+            console.log('Call API')
+        }
 
     </script>
 </body>

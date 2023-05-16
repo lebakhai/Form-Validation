@@ -15,6 +15,30 @@ function Validator(formSelector) {
         }
     }
 
+    function handleValidate(e) {
+        var rules = formRules[e.target.name];
+        var errorMsg;
+
+        rules.find((rule) => {
+            errorMsg = rule(e.target);
+            return errorMsg
+        });
+
+        var formGroup = getParent(e.target, ".form-group");
+        if(errorMsg) {
+            formGroup.classList.add('invalid')
+            
+            if(!formGroup) return;
+            var formMsg = formGroup.querySelector('.form-msg');
+            if (formMsg) {
+                formMsg.textContent = errorMsg;
+            }
+        }
+
+        return !errorMsg;
+
+    }
+
     var formRules = {};
     var validatorRules = {
         required: (value) => {
@@ -34,7 +58,7 @@ function Validator(formSelector) {
             var min = minMax[0];
             var max = minMax[1];
 
-            const regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/;
+            const regex = /^(?=.*[a-zA-Z])(?=.*\d).*$/;
             return function(value) {
                 if (!value.value || value.value.length <= 0) {
                     return `Please enter password`
@@ -91,29 +115,6 @@ function Validator(formSelector) {
             input.onblur = handleValidate;
             input.oninput = handleClear;
 
-            function handleValidate(e) {
-                var rules = formRules[e.target.name];
-                var errorMsg;
-
-                rules.find((rule) => {
-                    errorMsg = rule(e.target);
-                    return errorMsg
-                });
-
-                var formGroup = getParent(e.target, ".form-group");
-                if(errorMsg) {
-                    formGroup.classList.add('invalid')
-                    
-                    if(!formGroup) return;
-                    var formMsg = formGroup.querySelector('.form-msg');
-                    if (formMsg) {
-                        formMsg.textContent = errorMsg;
-                    }
-                } else {
-                    formGroup.classList.remove('invalid')
-                }
-            }
-
             function handleClear(e) {
                 var formGroup = getParent(e.target, ".form-group");
                 if (formGroup.classList.contains('invalid')) {
@@ -128,5 +129,25 @@ function Validator(formSelector) {
             
         })
     }
-}
 
+    formElement.onsubmit = (e) => {
+        e.preventDefault();
+        var inputs = formElement.querySelectorAll('[name][rules]');
+        var isValid = true;
+
+        inputs.forEach((input, index) => {
+            if (!handleValidate({target: input,})) {
+                isValid = false;
+            }
+        })
+
+        if (isValid) {
+            if (this.onSubmit) {
+                this.onSubmit();
+            } else {
+                formElement.submit();
+            }
+        }
+    }
+
+}
